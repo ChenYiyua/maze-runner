@@ -1,23 +1,23 @@
 package de.tum.cit.fop.maze;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.ScreenUtils;
+import de.tum.cit.fop.maze.entities.Character;
 
 /**
  * The GameScreen class is responsible for rendering the gameplay screen.
  * It handles the game logic and rendering of the game elements.
  */
-public class GameScreen implements Screen {
-
+public class GameScreen extends InputAdapter implements Screen {
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
     private final BitmapFont font;
 
     private float sinusInput = 0f;
+    Character character;
+    GameMap map;
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -34,6 +34,10 @@ public class GameScreen implements Screen {
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
+        map = new GameMap("maps/level-2.properties");
+        character = new Character(100, 100);
+        InputMultiplexer multiplexer = new InputMultiplexer(this, character);
+        Gdx.input.setInputProcessor(multiplexer);
     }
 
 
@@ -46,6 +50,7 @@ public class GameScreen implements Screen {
         }
 
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
+        camera.position.set(character.getX() + 64, character.getY() + 32, 0);
 
         camera.update(); // Update the camera
 
@@ -63,13 +68,15 @@ public class GameScreen implements Screen {
         font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
 
         // Draw the character next to the text :) / We can reuse sinusInput here
-        game.getSpriteBatch().draw(
+        /*game.getSpriteBatch().draw(
                 game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
                 textX - 96,
                 textY - 64,
                 64,
                 128
-        );
+        );*/
+        map.render(game.getSpriteBatch(), delta);
+        character.render(game.getSpriteBatch(), delta);
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
     }
@@ -100,5 +107,11 @@ public class GameScreen implements Screen {
     public void dispose() {
     }
 
-    // Additional methods and logic can be added as needed for the game screen
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        float zoom = amountY * 0.1f;
+        if ((camera.zoom + zoom) > 0.5 && (camera.zoom + zoom) < 2.0) camera.zoom += zoom;
+        return super.scrolled(amountX, amountY);
+    }
+// Additional methods and logic can be added as needed for the game screen
 }

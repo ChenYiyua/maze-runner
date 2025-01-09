@@ -26,9 +26,6 @@ public class MazeRunnerGame extends Game {
     // UI Skin
     private Skin skin;
 
-    // Character animation downwards
-    private Animation<TextureRegion> characterDownAnimation;
-
     /**
      * Constructor for MazeRunnerGame.
      *
@@ -43,9 +40,9 @@ public class MazeRunnerGame extends Game {
      */
     @Override
     public void create() {
+        AssetsLoader.load();
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
-        this.loadCharacterAnimation(); // Load character animation
 
         // Play some background music
         // Background sound
@@ -78,26 +75,7 @@ public class MazeRunnerGame extends Game {
         }
     }
 
-    /**
-     * Loads the character animation from the character.png file.
-     */
-    private void loadCharacterAnimation() {
-        Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
 
-        int frameWidth = 16;
-        int frameHeight = 32;
-        int animationFrames = 4;
-
-        // libGDX internal Array instead of ArrayList because of performance
-        Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
-
-        // Add all frames to the animation
-        for (int col = 0; col < animationFrames; col++) {
-            walkFrames.add(new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight));
-        }
-
-        characterDownAnimation = new Animation<>(0.1f, walkFrames);
-    }
 
     /**
      * Cleans up resources when the game is disposed.
@@ -113,10 +91,6 @@ public class MazeRunnerGame extends Game {
     // Getter methods
     public Skin getSkin() {
         return skin;
-    }
-
-    public Animation<TextureRegion> getCharacterDownAnimation() {
-        return characterDownAnimation;
     }
 
     public SpriteBatch getSpriteBatch() {
