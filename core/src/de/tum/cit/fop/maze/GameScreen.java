@@ -3,6 +3,7 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tum.cit.fop.maze.entities.Character;
 
@@ -14,8 +15,6 @@ public class GameScreen extends InputAdapter implements Screen {
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
     private final BitmapFont font;
-
-    private float sinusInput = 0f;
     Character character;
     GameMap map;
 
@@ -34,9 +33,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
-        map = new GameMap("maps/level-2.properties");
-        character = new Character(100, 100);
-        InputMultiplexer multiplexer = new InputMultiplexer(this, character);
+
+        character = new Character(40, 80);
+        map = new GameMap("maps/level-5.properties", character);
+        InputMultiplexer multiplexer = new InputMultiplexer(this, character.getInputAdapter());
         Gdx.input.setInputProcessor(multiplexer);
     }
 
@@ -54,31 +54,20 @@ public class GameScreen extends InputAdapter implements Screen {
 
         camera.update(); // Update the camera
 
-        // Move text in a circular path to have an example of a moving object
-        sinusInput += delta;
-        float textX = (float) (camera.position.x + Math.sin(sinusInput) * 100);
-        float textY = (float) (camera.position.y + Math.cos(sinusInput) * 100);
-
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
+        game.getDebugRenderer().setProjectionMatrix(camera.combined);
 
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
 
-        // Render the text
-        font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
-
-        // Draw the character next to the text :) / We can reuse sinusInput here
-        /*game.getSpriteBatch().draw(
-                game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
-                textX - 96,
-                textY - 64,
-                64,
-                128
-        );*/
         map.render(game.getSpriteBatch(), delta);
-        character.render(game.getSpriteBatch(), delta);
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
+
+        game.getDebugRenderer().begin(ShapeRenderer.ShapeType.Line);
+
+        map.render(game.getDebugRenderer(), delta);
+        game.getDebugRenderer().end();
     }
 
     @Override

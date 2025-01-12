@@ -6,20 +6,34 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.tum.cit.fop.maze.AssetsLoader;
 import de.tum.cit.fop.maze.interfaces.Renderable;
 
-public class Wall extends BaseEntity implements Renderable {
-    private final TextureRegion region;
+public class ExitPoint extends BaseEntity implements Renderable {
+    TextureRegion lockRegion, unlockRegion;
+    private boolean isLocked = true;
+    float x, y;
     private final Character character;
 
-    public Wall(int x, int y, Character character) {
-        super(x * 64, y * 64, 64, 64, Color.CYAN);
-        region = new TextureRegion(AssetsLoader.basicTilesTexture, 80, 0, 16, 16);
+    public ExitPoint(float x, float y, Character character) {
+        super(x * 64, y * 64, 64, 64, Color.YELLOW);
+        lockRegion = new TextureRegion(AssetsLoader.thingsTexture, 0, 0, 16, 16);
+        unlockRegion = new TextureRegion(AssetsLoader.thingsTexture, 48, 0, 16, 16);
+        this.x = x;
+        this.y = y;
         this.character = character;
     }
 
     @Override
     public void render(SpriteBatch batch, float delta) {
-        batch.draw(region, position.x, position.y, 64, 64);
-        checkCollision();
+        if (isLocked) {
+            batch.draw(lockRegion, position.x, position.y, size.x, size.y);
+            checkCollision();
+        } else {
+            batch.draw(unlockRegion, position.x, position.y, size.x, size.y);
+        }
+    }
+
+    public void unlock() {
+        isLocked = false;
+        collisionBox.set(x * 64 + 8, y * 64 + 8, 64 - 16, 64 - 16);
     }
 
     public void checkCollision() {

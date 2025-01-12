@@ -3,12 +3,9 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.Array;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 
 /**
@@ -22,6 +19,8 @@ public class MazeRunnerGame extends Game {
 
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
+
+    private ShapeRenderer debugRenderer;
 
     // UI Skin
     private Skin skin;
@@ -42,6 +41,7 @@ public class MazeRunnerGame extends Game {
     public void create() {
         AssetsLoader.load();
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
+        debugRenderer = new ShapeRenderer();
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
 
         // Play some background music
@@ -76,7 +76,6 @@ public class MazeRunnerGame extends Game {
     }
 
 
-
     /**
      * Cleans up resources when the game is disposed.
      */
@@ -95,5 +94,9 @@ public class MazeRunnerGame extends Game {
 
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
+    }
+
+    public ShapeRenderer getDebugRenderer() {
+        return debugRenderer;
     }
 }
