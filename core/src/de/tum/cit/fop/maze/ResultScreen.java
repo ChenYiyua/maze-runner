@@ -13,20 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-/**
- * The MenuScreen class is responsible for displaying the main menu of the game.
- * It extends the LibGDX Screen class and sets up the UI components for the menu.
- */
-public class MenuScreen implements Screen {
-
+public class ResultScreen implements Screen {
+    MazeRunnerGame game;
+    private Label title;
     private final Stage stage;
 
-    /**
-     * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.
-     *
-     * @param game The main game class, used to access global resources and methods.
-     */
-    public MenuScreen(MazeRunnerGame game) {
+    public ResultScreen(MazeRunnerGame game) {
+        this.game = game;
         var camera = new OrthographicCamera();
         camera.zoom = 1.5f; // Set camera zoom for a closer view
 
@@ -36,19 +29,25 @@ public class MenuScreen implements Screen {
         Table table = new Table(); // Create a table for layout
         table.setFillParent(true); // Make the table fill the stage
         stage.addActor(table); // Add the table to the stage
-
+        title = new Label("", game.getSkin(), "title");
         // Add a label as a title
-        table.add(new Label("Maze Runner", game.getSkin(), "title")).padBottom(80).row();
+        table.add(title).padBottom(80).row();
 
         // Create and add a button to go to the game screen
-        TextButton goToGameButton = new TextButton("Go To Game", game.getSkin());
-        table.add(goToGameButton).width(300).row();
-        goToGameButton.addListener(new ChangeListener() {
+        TextButton goToMenuButton = new TextButton("Go To Menu", game.getSkin());
+        table.add(goToMenuButton).width(300).row();
+        goToMenuButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.goToGame(); // Change to the game screen when button is pressed
+                game.goToMenu();
             }
         });
+    }
+
+    @Override
+    public void show() {
+        // Set the input processor so the stage can receive input events
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
@@ -64,27 +63,27 @@ public class MenuScreen implements Screen {
     }
 
     @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
     public void dispose() {
         // Dispose of the stage when screen is disposed
         stage.dispose();
     }
 
-    @Override
-    public void show() {
-        // Set the input processor so the stage can receive input events
-        Gdx.input.setInputProcessor(stage);
-    }
-
-    // The following methods are part of the Screen interface but are not used in this screen.
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void hide() {
+    public void setTitle(String title) {
+        this.title.setText(title);
     }
 }

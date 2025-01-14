@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.graphics.Texture;
 
+// 资源加载器 保管纹理资源
 public class AssetsLoader {
     public static Texture characterTexture = null;
     public static Texture basicTilesTexture = null;

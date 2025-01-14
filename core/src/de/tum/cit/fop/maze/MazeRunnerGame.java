@@ -16,6 +16,7 @@ public class MazeRunnerGame extends Game {
     // Screens
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
+    private ResultScreen resultScreen;
 
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
@@ -31,7 +32,7 @@ public class MazeRunnerGame extends Game {
      * @param fileChooser The file chooser for the game, typically used in desktop environment.
      */
     public MazeRunnerGame(NativeFileChooser fileChooser) {
-        super();
+
     }
 
     /**
@@ -43,6 +44,10 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         debugRenderer = new ShapeRenderer();
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
+
+        menuScreen = new MenuScreen(this);
+        gameScreen = new GameScreen(this);
+        resultScreen = new ResultScreen(this);
 
         // Play some background music
         // Background sound
@@ -57,24 +62,20 @@ public class MazeRunnerGame extends Game {
      * Switches to the menu screen.
      */
     public void goToMenu() {
-        this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
-        if (gameScreen != null) {
-            gameScreen.dispose(); // Dispose the game screen if it exists
-            gameScreen = null;
-        }
+        this.setScreen(menuScreen); // Set the current screen to MenuScreen
     }
 
     /**
      * Switches to the game screen.
      */
     public void goToGame() {
-        this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
-        if (menuScreen != null) {
-            menuScreen.dispose(); // Dispose the menu screen if it exists
-            menuScreen = null;
-        }
+        this.setScreen(gameScreen); // Set the current screen to GameScreen
     }
 
+    public void goToResult(String title) {
+        resultScreen.setTitle(title);
+        this.setScreen(resultScreen);
+    }
 
     /**
      * Cleans up resources when the game is disposed.
@@ -98,5 +99,9 @@ public class MazeRunnerGame extends Game {
 
     public ShapeRenderer getDebugRenderer() {
         return debugRenderer;
+    }
+
+    public GameScreen getGameScreen() {
+        return gameScreen;
     }
 }

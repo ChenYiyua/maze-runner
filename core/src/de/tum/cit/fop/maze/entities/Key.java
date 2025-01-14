@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.tum.cit.fop.maze.AssetsLoader;
 import de.tum.cit.fop.maze.interfaces.Renderable;
 
+// 钥匙实体 收集所有钥匙打开终点大门
 public class Key extends BaseEntity implements Renderable {
     TextureRegion region;
     private final Character character;

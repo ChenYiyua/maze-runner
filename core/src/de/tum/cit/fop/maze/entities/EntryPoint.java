@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.tum.cit.fop.maze.AssetsLoader;
 import de.tum.cit.fop.maze.interfaces.Renderable;
 
+// 出生点实体 自动更新主角位置
 public class EntryPoint extends BaseEntity implements Renderable {
     TextureRegion region;
 

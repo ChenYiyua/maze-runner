@@ -7,9 +7,11 @@ import com.badlogic.gdx.math.Vector2;
 import de.tum.cit.fop.maze.Constants;
 import de.tum.cit.fop.maze.interfaces.DebugRenderable;
 
+// 所有实体的基类
 public class BaseEntity implements DebugRenderable {
     public final Vector2 position = new Vector2();
     public final Vector2 size = new Vector2();
+    // 碰撞箱
     public final Rectangle collisionBox;
     private final Color debugColor;
 
