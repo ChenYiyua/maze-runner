@@ -25,6 +25,8 @@ public class MazeRunnerGame extends Game {
 
     // UI Skin
     private Skin skin;
+    public NativeFileChooser fileChooser;
+    Music currentMusic = null;
 
     /**
      * Constructor for MazeRunnerGame.
@@ -32,7 +34,7 @@ public class MazeRunnerGame extends Game {
      * @param fileChooser The file chooser for the game, typically used in desktop environment.
      */
     public MazeRunnerGame(NativeFileChooser fileChooser) {
-
+        this.fileChooser = fileChooser;
     }
 
     /**
@@ -49,19 +51,15 @@ public class MazeRunnerGame extends Game {
         gameScreen = new GameScreen(this);
         resultScreen = new ResultScreen(this);
 
-        // Play some background music
-        // Background sound
-        Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
-        backgroundMusic.setLooping(true);
-        backgroundMusic.play();
-
-        goToMenu(); // Navigate to the menu screen
+        goToMenu(false); // Navigate to the menu screen
     }
 
     /**
      * Switches to the menu screen.
      */
-    public void goToMenu() {
+    public void goToMenu(boolean fromPauseGame) {
+        setCurrentMusic(AssetsLoader.menuMusic);
+        menuScreen.fromPauseGame = fromPauseGame;
         this.setScreen(menuScreen); // Set the current screen to MenuScreen
     }
 
@@ -69,10 +67,12 @@ public class MazeRunnerGame extends Game {
      * Switches to the game screen.
      */
     public void goToGame() {
+        setCurrentMusic(AssetsLoader.gameMusic);
         this.setScreen(gameScreen); // Set the current screen to GameScreen
     }
 
     public void goToResult(String title) {
+        setCurrentMusic(AssetsLoader.menuMusic);
         resultScreen.setTitle(title);
         this.setScreen(resultScreen);
     }
@@ -103,5 +103,12 @@ public class MazeRunnerGame extends Game {
 
     public GameScreen getGameScreen() {
         return gameScreen;
+    }
+
+    public void setCurrentMusic(Music music) {
+        if (music == currentMusic) return;
+        if (this.currentMusic != null) currentMusic.stop();
+        currentMusic = music;
+        currentMusic.play();
     }
 }

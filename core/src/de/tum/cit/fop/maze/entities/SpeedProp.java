@@ -27,6 +27,8 @@ public class SpeedProp extends BaseEntity implements Renderable {
             // 每个加速道具增加 3 秒二倍速持续时间
             character.speedPropTime += 3.0f;
             enable = false;
+            character.score += 30;
+            AssetsLoader.eatSound.play();
         }
         stateTime += delta;
         if (enable) batch.draw(region, position.x, position.y, size.x, size.y);

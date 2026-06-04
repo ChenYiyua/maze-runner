@@ -8,7 +8,7 @@ import de.tum.cit.fop.maze.AssetsLoader;
 import de.tum.cit.fop.maze.interfaces.Renderable;
 import de.tum.cit.fop.maze.utils.AnimationUtils;
 
-// 道具心实体 为主角恢复生命
+// 道具心实体 为主角恢复生命 加分
 public class Heart extends BaseEntity implements Renderable {
     Animation<TextureRegion> animation;
     float stateTime = 0.0f;
@@ -26,7 +26,9 @@ public class Heart extends BaseEntity implements Renderable {
     public void render(SpriteBatch batch, float delta) {
         if (character.isOverlaps(collisionBox) && enable) {
             character.addHealth(1);
+            character.score += 20;
             enable = false;
+            AssetsLoader.eatSound.play();
         }
         stateTime += delta;
         if (enable) batch.draw(animation.getKeyFrame(stateTime, true), position.x, position.y, size.x, size.y);

@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -29,18 +30,20 @@ public class GameMap implements Renderable, DebugRenderable {
     Array<BlockEntity> blocks = new Array<>();
     Array<Heart> hearts = new Array<>();
     Array<SpeedProp> speedProps = new Array<>();
-    FileHandle fileHandle;
+    FileHandle saveHandle;
     MazeRunnerGame game;
+    TextureRegion background;
+    public int keyCount = 0;
 
     public GameMap(FileHandle fileHandle, MazeRunnerGame game) {
-        this.fileHandle = fileHandle;
         this.game = game;
-        reload();
+        background = new TextureRegion(AssetsLoader.basicTilesTexture, 0, 16, 16, 16);
+        reload(fileHandle);
     }
 
     public void reload() {
         clear();
-        load(fileHandle);
+        load(saveHandle);
     }
 
     public void reload(FileHandle fileHandle) {
@@ -49,6 +52,7 @@ public class GameMap implements Renderable, DebugRenderable {
     }
 
     public void clear() {
+        keyCount = 0;
         maxX = 0;
         maxY = 0;
         walls.clear();
@@ -64,6 +68,7 @@ public class GameMap implements Renderable, DebugRenderable {
     }
 
     public void load(FileHandle fileHandle) {
+        saveHandle = fileHandle;
         properties = new Properties();
         this.character = new Character(-100, -100);
         try {
@@ -88,6 +93,7 @@ public class GameMap implements Renderable, DebugRenderable {
                         break;
                     case 1:
                         entryPoint = new EntryPoint(x, y, character);
+                        enemiesWalls.add(entryPoint);
                         break;
                     case 2:
                         ExitPoint exitPoint = new ExitPoint(x, y, character, game);
@@ -104,10 +110,12 @@ public class GameMap implements Renderable, DebugRenderable {
                         break;
                     case 5:
                         keys.add(new Key(x, y, character));
+                        keyCount++;
                         break;
                 }
             }
         }
+        entryPoint.setBlocks(blocks);
         for (ExitPoint exitPoint : exitPoints) {
             exitPoint.setBlocks(blocks);
         }
@@ -135,6 +143,11 @@ public class GameMap implements Renderable, DebugRenderable {
         if (character.getX() > maxX * 64) character.setX(maxX * 64);
         if (character.getY() < 0) character.setY(0);
         if (character.getY() > maxY * 64) character.setY(maxY * 64);
+        for (int i = 0; i < maxX; i++) {
+            for (int j = 0; j < maxY; j++) {
+                batch.draw(background, i * 64, j * 64, 64, 64);
+            }
+        }
         checkHearts(batch, delta);
         checkSpeedProps(batch, delta);
         for (Wall wall : walls) wall.render(batch, delta);

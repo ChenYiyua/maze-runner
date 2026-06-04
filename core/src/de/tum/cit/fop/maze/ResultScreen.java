@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -17,10 +18,12 @@ public class ResultScreen implements Screen {
     MazeRunnerGame game;
     private Label title;
     private final Stage stage;
+    SpriteBatch batch;
 
     public ResultScreen(MazeRunnerGame game) {
         this.game = game;
         var camera = new OrthographicCamera();
+        batch = new SpriteBatch();
         camera.zoom = 1.5f; // Set camera zoom for a closer view
 
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
@@ -39,7 +42,7 @@ public class ResultScreen implements Screen {
         goToMenuButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.goToMenu();
+                game.goToMenu(false);
             }
         });
     }
@@ -53,6 +56,9 @@ public class ResultScreen implements Screen {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen
+        batch.begin();
+        batch.draw(AssetsLoader.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f)); // Update the stage
         stage.draw(); // Draw the stage
     }
@@ -60,6 +66,7 @@ public class ResultScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true); // Update the stage viewport on resize
+        batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
     }
 
     @Override

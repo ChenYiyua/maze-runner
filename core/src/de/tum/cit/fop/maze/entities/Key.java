@@ -23,6 +23,8 @@ public class Key extends BaseEntity implements Renderable {
     public void render(SpriteBatch batch, float delta) {
         if (character.isOverlaps(collisionBox)) {
             enable = false;
+            character.score += 50;
+            if (AssetsLoader.keySound != null) AssetsLoader.keySound.play();
         }
         if (enable) batch.draw(region, position.x, position.y, size.x, size.y);
     }

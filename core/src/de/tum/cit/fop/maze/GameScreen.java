@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tum.cit.fop.maze.entities.Character;
-import de.tum.cit.fop.maze.entities.ExitPoint;
 import de.tum.cit.fop.maze.entities.Key;
 import de.tum.cit.fop.maze.interfaces.Renderable;
 
@@ -26,7 +25,7 @@ public class GameScreen extends InputAdapter implements Screen {
     private final KeyHud keyHud;
     private final BitmapFont font;
     GameMap map;
-    public boolean isWin = false, isLose = false;
+    public boolean isWin = false, isLose = false, isLoad = false;
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -43,10 +42,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
-        map = new GameMap(Gdx.files.internal("maps/level-1.properties"), game);
+        map = new GameMap(Gdx.files.internal("maps/level-5.properties"), game);
         hudMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         heartHud = new HeartHud(16, Gdx.graphics.getHeight() - 64);
-        keyHud = new KeyHud(16, Gdx.graphics.getHeight() - 128);
+        keyHud = new KeyHud(16, Gdx.graphics.getHeight() - 128, font, map);
         heartHud.setCharacter(map.getCharacter());
         keyHud.setKeysArray(map.keys);
     }
@@ -55,12 +54,21 @@ public class GameScreen extends InputAdapter implements Screen {
     // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {
+        // 如果帧延迟过高就丢弃 防止穿墙以及选择文件导致的偏移
+        if (delta > 0.2f) return;
         if (map.getCharacter().isDead) isLose = true;
-        if (isWin) game.goToResult("You Win!");
-        if (isLose) game.goToResult("You Lose...");
+        if (isWin) {
+            if (AssetsLoader.wonSound != null) AssetsLoader.wonSound.play();
+            game.goToResult(" You Win!\nScore " + map.getCharacter().score);
+        }
+        if (isLose) {
+            if (AssetsLoader.failSound != null) AssetsLoader.failSound.play();
+            game.goToResult("You Lose...\n Score " + map.getCharacter().score);
+        }
         // Check for escape key press to go back to the menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            game.goToMenu();
+            map.getCharacter().stopInput();
+            game.goToMenu(true);
         }
 
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
@@ -87,6 +95,7 @@ public class GameScreen extends InputAdapter implements Screen {
         game.getSpriteBatch().begin();
         heartHud.render(game.getSpriteBatch(), delta);
         keyHud.render(game.getSpriteBatch(), delta);
+        font.draw(game.getSpriteBatch(), "Score: " + map.getCharacter().score, Gdx.graphics.getWidth() - 256, Gdx.graphics.getHeight() - 32);
         game.getSpriteBatch().end();
     }
 
@@ -108,9 +117,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void show() {
-        if (isWin || isLose) {
+        if (isWin || isLose || isLoad) {
             isWin = false;
             isLose = false;
+            isLoad = false;
             map.reload();
             heartHud.setCharacter(map.getCharacter());
             keyHud.setKeysArray(map.keys);
@@ -203,19 +213,22 @@ class KeyHud implements Renderable {
     private float x, y;
     private Array<Key> keys = null;
     private TextureRegion region;
+    private BitmapFont font;
+    private GameMap map;
 
-    public KeyHud(float x, float y) {
+    public KeyHud(float x, float y, BitmapFont font, GameMap map) {
         this.x = x;
         this.y = y;
         region = new TextureRegion(AssetsLoader.spriteSheetTexture, 11 * 16, 10 * 16, 16, 16);
+        this.font = font;
+        this.map = map;
     }
 
     @Override
     public void render(SpriteBatch batch, float delta) {
         if (keys == null) return;
-        for (int i = 0; i < keys.size; i++) {
-            batch.draw(region, 12 + x + i * 48, y, 48, 48);
-        }
+        batch.draw(region, 28, y, 48, 48);
+        font.draw(batch, map.keyCount - map.keys.size + " - " + map.keyCount, x + 72, y + 36);
     }
 
     public void setKeysArray(Array<Key> keys) {

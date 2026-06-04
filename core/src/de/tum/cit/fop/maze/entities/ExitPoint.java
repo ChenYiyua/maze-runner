@@ -30,12 +30,14 @@ public class ExitPoint extends BaseEntity implements Renderable {
 
     @Override
     public void render(SpriteBatch batch, float delta) {
+        checkEnemyCollision();
         if (isLocked) {
             batch.draw(lockRegion, position.x, position.y, size.x, size.y);
-            if (blocks != null) checkCollision();
+            if (blocks != null) checkPlayerCollision();
         } else {
             batch.draw(unlockRegion, position.x, position.y, size.x, size.y);
             if (character.isOverlaps(collisionBox)) {
+                character.score += 100;
                 game.getGameScreen().isWin = true;
             }
         }
@@ -52,7 +54,7 @@ public class ExitPoint extends BaseEntity implements Renderable {
         this.blocks = blocks;
     }
 
-    public void checkCollision() {
+    public void checkPlayerCollision() {
         // 碰撞检测加自动脱出墙壁算法
         for (BlockEntity entity : blocks) {
             if (entity.isOverlaps(getCollisionBox())) {
@@ -66,6 +68,14 @@ public class ExitPoint extends BaseEntity implements Renderable {
                     if (entity.getCollisionBox().getY() <= getCollisionBox().getY() && entity.direction == Direction.UP)
                         entity.setY(getCollisionBox().y - entity.getCollisionBox().height - entity.offsetY);
                 }
+            }
+        }
+    }
+
+    public void checkEnemyCollision() {
+        // 碰撞检测加自动脱出墙壁算法
+        for (BlockEntity entity : blocks) {
+            if (entity.isOverlaps(getCollisionBox())) {
                 if (entity instanceof Enemy) {
                     if (entity.getCollisionBox().getX() > getCollisionBox().getX() && entity.direction == Direction.LEFT)
                         entity.setX(getCollisionBox().x + getCollisionBox().width - entity.offsetX + 12);
