@@ -2,9 +2,9 @@
 
 Maze Runner is a Java/LibGDX desktop game built for the Fundamentals of Programming course. The player navigates tile-based maze levels, collects keys, avoids traps and enemies, and reaches the exit while managing health and score.
 
-![Maze Runner gameplay preview](docs/maze-runner-gameplay.png)
+![Maze Runner running locally](docs/maze-runner-runtime.png)
 
-The preview above is rendered from the repository's own assets and level data.
+The screenshot above was captured from the local LibGDX desktop game running with `.\gradlew.bat desktop:run`.
 
 ## Features
 
